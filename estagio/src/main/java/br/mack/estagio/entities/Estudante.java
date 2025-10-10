@@ -12,6 +12,7 @@ import lombok.Setter;
 
 public class Estudante {
     private int id;
+    private String nome;
     private String CPF;
     private String curso;
     private String email;

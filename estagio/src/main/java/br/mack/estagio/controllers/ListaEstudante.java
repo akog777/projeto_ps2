@@ -46,7 +46,7 @@ public class ListaEstudante {
     //UPDATE
     @PutMapping("/{id}")
     public Estudante atualizar(@PathVariable int id, @RequestBody(required = true) Estudante e) {
-        if(id != p.getId()){
+        if(id != e.getId()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IDs diferentes");
         }
         for (int i = 0; i < estudantes.size(); i++) {

@@ -9,7 +9,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-
 public class Admin {
- 
+    private int id;
+    private String nome;
+    private String CPF;
+    private String email;
+    private String telefone;
+    private String areaAtuacao;
 }
