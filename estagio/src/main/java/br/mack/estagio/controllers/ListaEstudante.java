@@ -8,57 +8,56 @@ import org.springframework.web.server.ResponseStatusException;
 import br.mack.estagio.entities.Estudante;
 
 @RestController
-@RequestMapping("/pessoas")
+@RequestMapping("/estudantes")
 public class ListaEstudante {
-    private List<Estudante> alunos;
+    private List<Estudante> estudantes;
     private int idCount = 0;
 
     ListaEstudante() {
-        alunos = new ArrayList<>();
-        alunos.add(new Estudante(idCount++, "Ana", "123.456.789-00", "Medicina", "ana@email.com", "(11) 91234-5678", "Clínica Geral"));
-        alunos.add(new Estudante(idCount++, "Bia", "987.654.321-00", "Engenharia", "bia@email.com", "(11) 99876-5432", "Civil"));
+        estudantes = new ArrayList<>();
+        estudantes.add(new Estudante(idCount++, "Ana", "123.456.789-00", "Medicina", "ana@email.com", "(11) 91234-5678", "Clínica Geral"));
+        estudantes.add(new Estudante(idCount++, "Bia", "987.654.321-00", "Engenharia", "bia@email.com", "(11) 99876-5432", "Civil"));
     }
+    
     //CREATE
-    @GetMapping()
-    public List<Estudante> todosOsAlunos() {
-        return alunos;
-    }
-
-
-
-    @GetMapping("/{id}")
-    public Pessoa lerPorID(@PathVariable int id) {
-        for (int i=0; i<pessoas.size(); i++) {
-            if (pessoas.get(i).getId() == id) {
-                return pessoas.get(i);
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada");
-    }
-
-    //READ
-    @PostMapping()
-    public Pessoa adicionarPessoa(@RequestBody(required = true) Pessoa p) {
-        p.setId(idCount++);
-        pessoas.add(p);
-        return p;
+    public Estudante adicionarEstudante(@RequestBody(required = true) Estudante e) {
+        e.setId(idCount++);
+        estudantes.add(e);
+        return e;
     }  
 
+    //READ
+    @GetMapping()
+    public List<Estudante> listarTodos() {
+        return estudantes;
+    }
+
+    @GetMapping("/{id}")
+    public Estudante listarPorID(@PathVariable int id) {
+        for (Estudante e : estudantes) {
+            if (e.getId() == id) {
+                return e;
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante não encontrado");
+    }
+
+    
     //UPDATE
     @PutMapping("/{id}")
-    public Pessoa atualizar(@PathVariable int id, @RequestBody(required = true) Pessoa p) {
+    public Estudante atualizar(@PathVariable int id, @RequestBody(required = true) Estudante e) {
         if(id != p.getId()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IDs diferentes");
         }
-        for (int i = 0; i < pessoas.size(); i++) {
-            Pessoa aux = pessoas.get(i);
+        for (int i = 0; i < estudantes.size(); i++) {
+            Pessoa aux = estudantes.get(i);
             if(aux.getId() == id){
-                pessoas.remove(aux);
-                pessoas.add(p);
-                return p;
+                estudantes.remove(aux);
+                estudantes.add(e);
+                return e;
             }
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante não encontrado");
 
     }
 
@@ -66,12 +65,12 @@ public class ListaEstudante {
     @DeleteMapping("/{id}")
     public Estudante apagar(@PathVariable int id) {
         Estudante e = null;
-        for (Estudante aux: pessoas){
+        for (Estudante aux: estudantes){
             if(aux.getId() == id){
-                p = aux;
+                e = aux;
             }
         }
-        pessoas.remove(p);
-        return p;
+        pessoas.remove(e);
+        return e;
     }
 }
