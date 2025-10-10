@@ -40,7 +40,7 @@ public class ListaAreaInteresse {
                 return a;
             }
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AreaInteresse não encontrado");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Area de interesse não encontrado");
     }
 
     
@@ -58,7 +58,7 @@ public class ListaAreaInteresse {
                 return a;
             }
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AreaInteresse não encontrado");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Area de interesse não encontrado");
 
     }
 
