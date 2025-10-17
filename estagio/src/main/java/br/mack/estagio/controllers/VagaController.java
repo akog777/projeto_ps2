@@ -8,70 +8,66 @@ import org.springframework.web.server.ResponseStatusException;
 import br.mack.estagio.entities.Vaga;
 
 @RestController
-@RequestMapping("/vagas")
 public class VagaController {
+    @Autowired
+    private VagaRepository rep;
 
-    private List<Vaga> vagas;
-    private int idCount = 0;
+    //CREATE
+    @PostMapping("/vagas")
+    public Vaga adicionarVaga(@RequestBody(required = true) Vaga v) {
+        if( v.getTitulo() == null || v.getDescricao() == null || v.getRequisitos() == null || v.getBeneficios() == null ||
+            v.getTitulo().isEmpty() || v.getDescricao().isEmpty() || v.getRequisitos().isEmpty() || v.getBeneficios().isEmpty()) {
+                
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
-    ListaVaga() {
-        vagas = new ArrayList<>();
-        vagas.add(new Vaga(idCount++, "Desenvolvedor Java", "Vaga para desenvolvedor Java com experiência em Spring Boot", "Tecnologia", "São Paulo, SP", "Presencial", "40 horas semanais", "Java, Spring Boot, SQL"));
-        vagas.add(new Vaga(idCount++, "Analista de Marketing", "Vaga para analista de marketing digital", "Marketing", "Remoto", "Remoto", "30 horas semanais", "SEO, Google Ads, Redes Sociais"));
+        return rep.save(v);
     }
     
-    //CREATE
-    public Vaga adicionarVaga(@RequestBody(required = true) Vaga v) {
-        v.setId(idCount++);
-        vagas.add(v);
-        return v;
-    }  
-
     //READ
     @GetMapping()
     public List<Vaga> listarTodos() {
-        return vagas;
+        return vaga;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/vagas/{id}")
     public Vaga listarPorID(@PathVariable int id) {
-        for (Vaga v : vagas) {
-            if (v.getId() == id) {
-                return v;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrado");
+        Optional<Vaga> optional = rep.findById(id);
+        
+        if(optional.isPresent()) return optional.get();
+        
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
     }
-
     
     //UPDATE
-    @PutMapping("/{id}")
+    @PutMapping("/vagas/{id}")
     public Vaga atualizar(@PathVariable int id, @RequestBody(required = true) Vaga v) {
         if(id != v.getId()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IDs diferentes");
         }
-        for (int i = 0; i < vagas.size(); i++) {
-            Pessoa aux = vagas.get(i);
-            if(aux.getId() == id){
-                vagas.remove(aux);
-                vagas.add();
-                return v;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrado");
+
+        Optional<Empresa> optional = rep.findById(id);
+        if(optional.isPresent()) {
+            Vagas vag = optional.get();
+            vag.setTitulo(novosDados.getTitulo());
+            vag.setDescricao(novosDados.getDescricao());
+            vag.setArea(novosDados.getArea());
+            vag.setEmail(novosDados.getEmail());
+            vag.setLocalizacao(novosDados.getLocalizacao());
+            vag.setModalidade(novosDados.getModalidade());
+            vag.setCargaHoraria(novosDados.getCargaHoraria());
+            vag.setRequisitos(novosDados.getRequisitos());
+            return rep.save(u);
+        } 
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
 
     }
 
     //DELETE
-    @DeleteMapping("/{id}")
-    public Vaga apagar(@PathVariable int id) {
-        Vaga v = null;
-        for (Vaga aux: vagas){
-            if(aux.getId() == id){
-                v = aux;
-            }
-        }
-        vagas.remove(v);
-        return v;
+    @DeleteMapping("/vagas/{id}")
+    public void apagarPeloId(@PathVariable int id) {
+         Optional<Vaga> optional = rep.findById(id);
+        
+        if(optional.isPresent()) rep.delete(optional.get());
     }
 }

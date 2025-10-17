@@ -9,18 +9,22 @@ import org.springframework.web.server.ResponseStatusException;
 import br.mack.estagio.entities.Admin;
 
 @RestController
-@RequestMapping("/admins")
 public class AdminController {
 
     @Autowired
     private AdminRepository rep;
     
     //CREATE
-    public Admin adicionarAdmin(@RequestBody(required = true) Admin a) {
-        a.setId(idCount++);
-        admins.add(a);
-        return a;
-    }  
+    @PostMapping("/admins")
+    public Admin criarAdmin(@RequestBody(required = true) Admin adm) { 
+        if( adm.getNome() == null || adm.getCPF() == null || adm.getEmail() == null || adm.getTelefone() == null || adm.getAreaAtuacao() == null ||
+            adm.getNome().isEmpty() || adm.getCPF().isEmpty() || adm.getEmail().isEmpty() || adm.getTelefone().isEmpty() || adm.getAreaAtuacao().isEmpty()) {
+                
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        return rep.save(adm);
+    }
 
     //READ
     @GetMapping()
@@ -28,45 +32,39 @@ public class AdminController {
         return admins;
     }
 
-    @GetMapping("/{id}")
-    public Admin listarPorID(@PathVariable int id) {
-        for (Admin a : admins) {
-            if (a.getId() == id) {
-                return a;
-            }
-        }
+    @GetMapping("/admins/{id}")
+    public Admin listarPeloId(@PathVariable int id) {
+        Optional<Admin> optional = rep.findById(id);
+        
+        if(optional.isPresent()) return optional.get();
+        
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin não encontrado");
     }
 
     
     //UPDATE
-    @PutMapping("/{id}")
-    public Admin atualizar(@PathVariable int id, @RequestBody(required = true) Admin a) {
-        if(id != a.getId()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IDs diferentes");
-        }
-        for (int i = 0; i < admins.size(); i++) {
-            Pessoa aux = admins.get(i);
-            if(aux.getId() == id){
-                admins.remove(aux);
-                admins.add(a);
-                return a;
-            }
-        }
+    @PutMapping("/admins/{id}")
+    public Admin atualizarAdminPeloId(@RequestBody Admin novosDados, @PathVariable long id) {
+        
+        Optional<Admin> optional = rep.findById(id);
+        if(optional.isPresent()) {
+            Admin adm = optional.get();
+            adm.setNome(novosDados.getNome());
+            adm.setCPF(novosDados.getCPF());
+            adm.setEmail(novosDados.getEmail());
+            adm.setTelefone(novosDados.getTelefone());
+            adm.setAreaAtuacao(novosDados.getAreaAtuacao());
+            return rep.save(u);
+        } 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin não encontrado");
 
     }
 
     //DELETE
-    @DeleteMapping("/{id}")
-    public Admin apagar(@PathVariable int id) {
-        Admin a = null;
-        for (Admin aux: admins){
-            if(aux.getId() == id){
-                a = aux;
-            }
-        }
-        admins.remove(a);
-        return a;
+    @DeleteMapping("/admins/{id}")
+    public void apagarPeloId(@PathVariable int id) {
+         Optional<Admin> optional = rep.findById(id);
+        
+        if(optional.isPresent()) rep.delete(optional.get());
     }
 }

@@ -12,7 +12,7 @@ import lombok.Data;
 @Entity
 public class AreaInteresse {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
     private String titulo;
     private String descricao;
 }

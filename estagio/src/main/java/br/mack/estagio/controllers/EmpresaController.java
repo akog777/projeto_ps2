@@ -8,69 +8,66 @@ import org.springframework.web.server.ResponseStatusException;
 import br.mack.estagio.entities.Empresa;
 
 @RestController
-@RequestMapping("/empresas")
 public class EmpresaController {
-    private List<Empresa> empresas;
-    private int idCount = 0;
 
-    ListaEmpresa() {
-        empresas = new ArrayList<>();
-        empresas.add(new Empresa(idCount++, "Tech Solutions", "12.345.678/0001-99", "tech@solution.com", "(11) 98765-4321", "Av. Paulista, 1000, São Paulo, SP", "Tecnologia"));
-        empresas.add(new Empresa(idCount++, "Green Energy", "98.765.432/0001-55", "green@nrg.com", "(21) 91234-5678", "Rua das Flores, 200, Rio de Janeiro, RJ", "Energia Renovável"));
-    }
-   
+    @Autowired
+    private EmpresaRepository rep;
+    
     //CREATE
-    public Empresa adicionarEmpresa(@RequestBody(required = true) Empresa e) {
-        e.setId(idCount++);
-        empresas.add(e);
-        return e;
-    }  
+    @PostMapping("/empresas")
+    public Empresa criarEmpresa(@RequestBody Empresa novaEmpresa) {
+        if( novaEmpresa.getNome() == null || novaEmpresa.getCNPJ() == null || novaEmpresa.getEmail() == null || 
+            novaEmpresa.getTelefone() == null || novaEmpresa.getEndereco() == null || novaEmpresa.getAreaAtuacao() == null ||
+            novaEmpresa.getNome().isEmpty() || novaEmpresa.getCNPJ().isEmpty() || novaEmpresa.getEmail().isEmpty() || 
+            novaEmpresa.getTelefone().isEmpty() || novaEmpresa.getEndereco().isEmpty() || 
+            novaEmpresa.getAreaAtuacao().isEmpty()) {
+                
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        return rep.save(novaEmpresa);
+    }
 
     //READ
     @GetMapping()
     public List<Empresa> listarTodos() {
-        return empresas;
+        return Empresa;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/empresas/{id}")
     public Empresa listarPorID(@PathVariable int id) {
-        for (Empresa e : empresas) {
-            if (e.getId() == id) {
-                return e;
-            }
-        }
+        Optional<Empresa> optional = rep.findById(id);
+        
+        if(optional.isPresent()) return optional.get();
+        
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
     }
 
     
     //UPDATE
-    @PutMapping("/{id}")
-    public Empresa atualizar(@PathVariable int id, @RequestBody(required = true) Empresa e) {
-        if(id != e.getId()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IDs diferentes");
-        }
-        for (int i = 0; i < empresas.size(); i++) {
-            Pessoa aux = empresas.get(i);
-            if(aux.getId() == id){
-                empresas.remove(aux);
-                empresas.add(e);
-                return e;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrado");
+    @PutMapping("/empresas/{id}")
+    public Empresa atualizarEmpresaPeloId(@RequestBody Empresa novosDados, @PathVariable int id) {
+        
+        Optional<Empresa> optional = rep.findById(id);
+        if(optional.isPresent()) {
+            Empresa emp = optional.get();
+            emp.setNome(novosDados.getNome());
+            emp.setCNPJ(novosDados.getCNPJ());
+            emp.setEmail(novosDados.getEmail());
+            emp.setTelefone(novosDados.getTelefone());
+            emp.setEndereco(novosDados.getEndereco());
+            emp.setAreaAtuacao(novosDados.getAreaAtuacao());
+            return rep.save(u);
+        } 
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
 
     }
 
     //DELETE
-    @DeleteMapping("/{id}")
-    public Empresa apagar(@PathVariable int id) {
-        Empresa e = null;
-        for (Empresa aux: empresas){
-            if(aux.getId() == id){
-                e = aux;
-            }
-        }
-        pessoas.remove(e);
-        return e;
+    @DeleteMapping("/empresas/{id}")
+    public void apagarPeloId(@PathVariable int id) {
+         Optional<Empresa> optional = rep.findById(id);
+        
+        if(optional.isPresent()) rep.delete(optional.get());
     }
 }
