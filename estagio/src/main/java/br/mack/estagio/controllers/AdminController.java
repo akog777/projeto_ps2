@@ -1,6 +1,7 @@
 package br.mack.estagio.controllers;
 
 import java.util.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -9,16 +10,10 @@ import br.mack.estagio.entities.Admin;
 
 @RestController
 @RequestMapping("/admins")
-public class ListaAdmin {
+public class AdminController {
 
-    private List<Admin> admins;
-    private int idCount = 0;
-
-    ListaAdmin() {
-        admins = new ArrayList<>();
-        admins.add(new Admin(idCount++, "Carlos", "111.222.333-44", "carlos@email.com", "(11) 93456-7890", "Recursos Humanos"));
-        admins.add(new Admin(idCount++, "Mariana", "555.666.777-88", "mari@email.com", "(11) 94567-8901", "Tecnologia da Informação"));
-    }
+    @Autowired
+    private AdminRepository rep;
     
     //CREATE
     public Admin adicionarAdmin(@RequestBody(required = true) Admin a) {

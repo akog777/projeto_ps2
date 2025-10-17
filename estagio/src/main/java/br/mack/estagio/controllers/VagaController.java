@@ -9,7 +9,7 @@ import br.mack.estagio.entities.Vaga;
 
 @RestController
 @RequestMapping("/vagas")
-public class ListaVaga {
+public class VagaController {
 
     private List<Vaga> vagas;
     private int idCount = 0;

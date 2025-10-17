@@ -1,15 +1,18 @@
 package br.mack.estagio.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 
+@Entity
 public class AreaInteresse {
-
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String titulo;
+    private String descricao;
 }

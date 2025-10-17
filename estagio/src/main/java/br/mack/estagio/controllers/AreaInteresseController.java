@@ -9,7 +9,7 @@ import br.mack.estagio.entities.AreaInteresse;
 
 @RestController
 @RequestMapping("/areas")
-public class ListaAreaInteresse {
+public class AreaInteresseController {
 
     private List<AreaInteresse> AreaInteresses;
     private int idCount = 0;
