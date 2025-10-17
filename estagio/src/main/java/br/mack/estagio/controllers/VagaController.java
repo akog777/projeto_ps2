@@ -4,34 +4,41 @@ import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.mack.estagio.repositories.VagaRepository;
 import br.mack.estagio.entities.Vaga;
 
 @RestController
 public class VagaController {
+    
     @Autowired
     private VagaRepository rep;
 
     //CREATE
     @PostMapping("/vagas")
-    public Vaga adicionarVaga(@RequestBody(required = true) Vaga v) {
-        if( v.getTitulo() == null || v.getDescricao() == null || v.getRequisitos() == null || v.getBeneficios() == null ||
-            v.getTitulo().isEmpty() || v.getDescricao().isEmpty() || v.getRequisitos().isEmpty() || v.getBeneficios().isEmpty()) {
+    public Vaga criarVaga(@RequestBody(required = true) Vaga novaVaga) {
+        if( novaVaga.getTitulo() == null || novaVaga.getDescricao() == null || novaVaga.getArea() == null || 
+            novaVaga.getEmail() == null || novaVaga.getLocalizacao() == null || novaVaga.getModalidade() == null ||
+            novaVaga.getCargaHoraria() == null || novaVaga.getRequisitos() == null ||
+            novaVaga.getTitulo().isEmpty() || novaVaga.getDescricao().isEmpty() || novaVaga.getArea().isEmpty() || 
+            novaVaga.getEmail().isEmpty() || novaVaga.getLocalizacao().isEmpty() || 
+            novaVaga.getModalidade().isEmpty() || novaVaga.getCargaHoraria().isEmpty() || novaVaga.getRequisitos().isEmpty()) {
                 
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        return rep.save(v);
+        return rep.save(novaVaga);
     }
     
     //READ
     @GetMapping()
     public List<Vaga> listarTodos() {
-        return vaga;
+        return rep.findAll();
     }
 
     @GetMapping("/vagas/{id}")
-    public Vaga listarPorID(@PathVariable int id) {
+    public Vaga listarPeloId(@PathVariable int id) {
         Optional<Vaga> optional = rep.findById(id);
         
         if(optional.isPresent()) return optional.get();
@@ -48,16 +55,16 @@ public class VagaController {
 
         Optional<Empresa> optional = rep.findById(id);
         if(optional.isPresent()) {
-            Vagas vag = optional.get();
-            vag.setTitulo(novosDados.getTitulo());
-            vag.setDescricao(novosDados.getDescricao());
-            vag.setArea(novosDados.getArea());
-            vag.setEmail(novosDados.getEmail());
-            vag.setLocalizacao(novosDados.getLocalizacao());
-            vag.setModalidade(novosDados.getModalidade());
-            vag.setCargaHoraria(novosDados.getCargaHoraria());
-            vag.setRequisitos(novosDados.getRequisitos());
-            return rep.save(u);
+            Vagas vaga = optional.get();
+            vaga.setTitulo(novosDados.getTitulo());
+            vaga.setDescricao(novosDados.getDescricao());
+            vaga.setArea(novosDados.getArea());
+            vaga.setEmail(novosDados.getEmail());
+            vaga.setLocalizacao(novosDados.getLocalizacao());
+            vaga.setModalidade(novosDados.getModalidade());
+            vaga.setCargaHoraria(novosDados.getCargaHoraria());
+            vaga.setRequisitos(novosDados.getRequisitos());
+            return rep.save(vaga);
         } 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaga não encontrada");
 

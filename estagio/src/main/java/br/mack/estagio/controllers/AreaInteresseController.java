@@ -1,11 +1,12 @@
 package br.mack.estagio.controllers;
 
 import java.util.*;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.mack.estagio.repositories.AreaInteresseRepository;
 import br.mack.estagio.entities.AreaInteresse;
 
 @RestController
@@ -16,10 +17,11 @@ public class AreaInteresseController {
     
     //CREATE
     @PostMapping("/areas")
-    public AreaInteresse criarAreaInteresse(@RequestBody AreaInteresse novaArea) {
-        if(novaArea.getTitulo() == null || novaArea.getTitulo().isEmpty() || 
-            novaArea.getDescricao() == null || novaArea.getDescricao().isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    public AreaInteresse criarArea(@RequestBody AreaInteresse novaArea) {
+        if( novaArea.getTitulo() == null || novaArea.getDescricao() == null ||
+            novaArea.getTitulo().isEmpty() || novaArea.getDescricao().isEmpty()) {
+                
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         return rep.save(novaArea);
@@ -28,11 +30,11 @@ public class AreaInteresseController {
     //READ
     @GetMapping()
     public List<AreaInteresse> listarTodos() {
-        return areaInteresse;
+        return rep.findAll();
     }
 
     @GetMapping("/areas/{id}")
-    public AreaInteressa listarPeloId(@PathVariable int id) {
+    public AreaInteresse listarPeloId(@PathVariable int id) {
         Optional<AreaInteresse> optional = rep.findById(id);
         
         if(optional.isPresent()) return optional.get();
@@ -43,14 +45,14 @@ public class AreaInteresseController {
     
     //UPDATE
     @PutMapping("/areas/{id}")
-    public User atualizarAreaPeloId(@RequestBody AreaInteresse novosDados, @PathVariable int id) {
+    public AreaInteresse atualizarPeloId(@RequestBody AreaInteresse novosDados, @PathVariable int id) {
         
         Optional<AreaInteresse> optional = rep.findById(id);
         if(optional.isPresent()) {
-            AreaInteresse arm = optional.get();
-            arm.setTitulo(novosDados.getTitulo());
-            arm.setDescricao(novosDados.getDescricao);
-            return rep.save(u);
+            AreaInteresse areaint = optional.get();
+            areaint.setTitulo(novosDados.getTitulo());
+            areaint.setDescricao(novosDados.getDescricao);
+            return rep.save(areaint);
         } 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Área de intersse não encontrada");
 

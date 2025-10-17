@@ -5,7 +5,9 @@ import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.mack.estagio.repositories.AdminRepository;
 import br.mack.estagio.entities.Admin;
 
 @RestController
@@ -16,9 +18,11 @@ public class AdminController {
     
     //CREATE
     @PostMapping("/admins")
-    public Admin criarAdmin(@RequestBody(required = true) Admin adm) { 
-        if( adm.getNome() == null || adm.getCPF() == null || adm.getEmail() == null || adm.getTelefone() == null || adm.getAreaAtuacao() == null ||
-            adm.getNome().isEmpty() || adm.getCPF().isEmpty() || adm.getEmail().isEmpty() || adm.getTelefone().isEmpty() || adm.getAreaAtuacao().isEmpty()) {
+    public Admin criarAdmin(@RequestBody(required = true) Admin adm) {
+        if( adm.getNome() == null || adm.getCPF() == null || adm.getEmail() == null || 
+            adm.getTelefone() == null || adm.getAreaAtuacao() == null ||
+            adm.getNome().isEmpty() || adm.getCPF().isEmpty() || adm.getEmail().isEmpty() || 
+            adm.getTelefone().isEmpty() || adm.getAreaAtuacao().isEmpty()) {
                 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -29,7 +33,7 @@ public class AdminController {
     //READ
     @GetMapping()
     public List<Admin> listarTodos() {
-        return admins;
+        return rep.findAll();
     }
 
     @GetMapping("/admins/{id}")
@@ -44,7 +48,7 @@ public class AdminController {
     
     //UPDATE
     @PutMapping("/admins/{id}")
-    public Admin atualizarAdminPeloId(@RequestBody Admin novosDados, @PathVariable long id) {
+    public Admin atualizarPeloId(@RequestBody Admin novosDados, @PathVariable long id) {
         
         Optional<Admin> optional = rep.findById(id);
         if(optional.isPresent()) {
@@ -54,7 +58,7 @@ public class AdminController {
             adm.setEmail(novosDados.getEmail());
             adm.setTelefone(novosDados.getTelefone());
             adm.setAreaAtuacao(novosDados.getAreaAtuacao());
-            return rep.save(u);
+            return rep.save(adm);
         } 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin não encontrado");
 

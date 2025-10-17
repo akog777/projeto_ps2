@@ -4,7 +4,9 @@ import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.mack.estagio.repositories.EmpresaRepository;
 import br.mack.estagio.entities.Empresa;
 
 @RestController
@@ -19,8 +21,7 @@ public class EmpresaController {
         if( novaEmpresa.getNome() == null || novaEmpresa.getCNPJ() == null || novaEmpresa.getEmail() == null || 
             novaEmpresa.getTelefone() == null || novaEmpresa.getEndereco() == null || novaEmpresa.getAreaAtuacao() == null ||
             novaEmpresa.getNome().isEmpty() || novaEmpresa.getCNPJ().isEmpty() || novaEmpresa.getEmail().isEmpty() || 
-            novaEmpresa.getTelefone().isEmpty() || novaEmpresa.getEndereco().isEmpty() || 
-            novaEmpresa.getAreaAtuacao().isEmpty()) {
+            novaEmpresa.getTelefone().isEmpty() || novaEmpresa.getEndereco().isEmpty() || novaEmpresa.getAreaAtuacao().isEmpty()) {
                 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -31,11 +32,11 @@ public class EmpresaController {
     //READ
     @GetMapping()
     public List<Empresa> listarTodos() {
-        return Empresa;
+        return rep.findAll();
     }
 
     @GetMapping("/empresas/{id}")
-    public Empresa listarPorID(@PathVariable int id) {
+    public Empresa listarPeloId(@PathVariable int id) {
         Optional<Empresa> optional = rep.findById(id);
         
         if(optional.isPresent()) return optional.get();
@@ -46,7 +47,7 @@ public class EmpresaController {
     
     //UPDATE
     @PutMapping("/empresas/{id}")
-    public Empresa atualizarEmpresaPeloId(@RequestBody Empresa novosDados, @PathVariable int id) {
+    public Empresa atualizarPeloId(@RequestBody Empresa novosDados, @PathVariable int id) {
         
         Optional<Empresa> optional = rep.findById(id);
         if(optional.isPresent()) {
@@ -57,7 +58,7 @@ public class EmpresaController {
             emp.setTelefone(novosDados.getTelefone());
             emp.setEndereco(novosDados.getEndereco());
             emp.setAreaAtuacao(novosDados.getAreaAtuacao());
-            return rep.save(u);
+            return rep.save(emp);
         } 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
 
