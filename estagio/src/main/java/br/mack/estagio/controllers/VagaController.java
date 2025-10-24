@@ -6,39 +6,56 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.mack.estagio.repositories.VagaRepository;
-import br.mack.estagio.entities.Vaga;
+import br.mack.estagio.repository.*;
+import br.mack.estagio.entities.*;
 
 @RestController
+@RequestMapping("/vagas")
 public class VagaController {
     
     @Autowired
     private VagaRepository rep;
 
+    @Autowired
+    private AreaInteresseRepository areaRep;
+
+    @Autowired
+    private EmpresaRepository empresaRep;
+
     //CREATE
-    @PostMapping("/vagas")
+    @PostMapping("")
     public Vaga criarVaga(@RequestBody(required = true) Vaga novaVaga) {
-        if( novaVaga.getTitulo() == null || novaVaga.getDescricao() == null || novaVaga.getArea() == null || 
-            novaVaga.getEmail() == null || novaVaga.getLocalizacao() == null || novaVaga.getModalidade() == null ||
+        if( novaVaga.getTitulo() == null || novaVaga.getDescricao() == null ||
+            novaVaga.getLocalizacao() == null || novaVaga.getModalidade() == null ||
             novaVaga.getCargaHoraria() == null || novaVaga.getRequisitos() == null ||
-            novaVaga.getTitulo().isEmpty() || novaVaga.getDescricao().isEmpty() || novaVaga.getArea().isEmpty() || 
-            novaVaga.getEmail().isEmpty() || novaVaga.getLocalizacao().isEmpty() || 
-            novaVaga.getModalidade().isEmpty() || novaVaga.getCargaHoraria().isEmpty() || novaVaga.getRequisitos().isEmpty()) {
+            novaVaga.getTitulo().isEmpty() || novaVaga.getDescricao().isEmpty() ||
+            novaVaga.getLocalizacao().isEmpty() || novaVaga.getModalidade().isEmpty() ||
+            novaVaga.getCargaHoraria().isEmpty() || novaVaga.getRequisitos().isEmpty() ||
+            novaVaga.getAreaInteresse() == null || novaVaga.getAreaInteresse().getId() == null ||
+            novaVaga.getEmpresa() == null || novaVaga.getEmpresa().getId() == null) {
                 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
+        AreaInteresse area = areaRep.findById(novaVaga.getAreaInteresse().getId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Área não encontrada"));
+        Empresa emp = empresaRep.findById(novaVaga.getEmpresa().getId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+
+        novaVaga.setAreaInteresse(area);
+        novaVaga.setEmpresa(emp);
 
         return rep.save(novaVaga);
     }
     
     //READ
-    @GetMapping()
+    @GetMapping("")
     public List<Vaga> listarTodos() {
         return rep.findAll();
     }
 
-    @GetMapping("/vagas/{id}")
-    public Vaga listarPeloId(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public Vaga listarPeloId(@PathVariable Long id) {
         Optional<Vaga> optional = rep.findById(id);
         
         if(optional.isPresent()) return optional.get();
@@ -47,19 +64,18 @@ public class VagaController {
     }
     
     //UPDATE
-    @PutMapping("/vagas/{id}")
-    public Vaga atualizar(@PathVariable int id, @RequestBody(required = true) Vaga v) {
-        if(id != v.getId()){
+    @PutMapping("/{id}")
+    public Vaga atualizar(@RequestBody Vaga novosDados, @PathVariable Long id) {
+        if(novosDados.getId() == null || !novosDados.getId().equals(id)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IDs diferentes");
         }
 
-        Optional<Empresa> optional = rep.findById(id);
+        Optional<Vaga> optional = rep.findById(id);
         if(optional.isPresent()) {
-            Vagas vaga = optional.get();
+            Vaga vaga = optional.get();
             vaga.setTitulo(novosDados.getTitulo());
             vaga.setDescricao(novosDados.getDescricao());
             vaga.setArea(novosDados.getArea());
-            vaga.setEmail(novosDados.getEmail());
             vaga.setLocalizacao(novosDados.getLocalizacao());
             vaga.setModalidade(novosDados.getModalidade());
             vaga.setCargaHoraria(novosDados.getCargaHoraria());
@@ -71,8 +87,8 @@ public class VagaController {
     }
 
     //DELETE
-    @DeleteMapping("/vagas/{id}")
-    public void apagarPeloId(@PathVariable int id) {
+    @DeleteMapping("/{id}")
+    public void apagarPeloId(@PathVariable Long id) {
          Optional<Vaga> optional = rep.findById(id);
         
         if(optional.isPresent()) rep.delete(optional.get());

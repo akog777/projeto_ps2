@@ -12,7 +12,10 @@ import lombok.Data;
 @Entity
 public class AreaInteresse {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private String titulo;
     private String descricao;
+
+    @ManyToMany(mappedBy = "areasInteresse")
+    private java.util.Set<Estudante> estudantes = new java.util.HashSet<>();
 }

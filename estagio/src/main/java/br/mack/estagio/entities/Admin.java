@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +12,7 @@ import lombok.Data;
 @Entity
 public class Admin {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private String nome;
     private String CPF;
     private String email;

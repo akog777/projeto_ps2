@@ -7,17 +7,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.mack.estagio.repositories.AdminRepository;
+import br.mack.estagio.repository.AdminRepository;
 import br.mack.estagio.entities.Admin;
 
 @RestController
+@RequestMapping("/admins")
 public class AdminController {
 
     @Autowired
     private AdminRepository rep;
     
     //CREATE
-    @PostMapping("/admins")
+    @PostMapping("")
     public Admin criarAdmin(@RequestBody(required = true) Admin adm) {
         if( adm.getNome() == null || adm.getCPF() == null || adm.getEmail() == null || 
             adm.getTelefone() == null || adm.getAreaAtuacao() == null ||
@@ -31,13 +32,13 @@ public class AdminController {
     }
 
     //READ
-    @GetMapping()
+    @GetMapping("")
     public List<Admin> listarTodos() {
         return rep.findAll();
     }
 
-    @GetMapping("/admins/{id}")
-    public Admin listarPeloId(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public Admin listarPeloId(@PathVariable Long id) {
         Optional<Admin> optional = rep.findById(id);
         
         if(optional.isPresent()) return optional.get();
@@ -47,8 +48,8 @@ public class AdminController {
 
     
     //UPDATE
-    @PutMapping("/admins/{id}")
-    public Admin atualizarPeloId(@RequestBody Admin novosDados, @PathVariable long id) {
+    @PutMapping("/{id}")
+    public Admin atualizarPeloId(@RequestBody Admin novosDados, @PathVariable Long id) {
         
         Optional<Admin> optional = rep.findById(id);
         if(optional.isPresent()) {
@@ -65,8 +66,8 @@ public class AdminController {
     }
 
     //DELETE
-    @DeleteMapping("/admins/{id}")
-    public void apagarPeloId(@PathVariable int id) {
+    @DeleteMapping("/{id}")
+    public void apagarPeloId(@PathVariable Long id) {
          Optional<Admin> optional = rep.findById(id);
         
         if(optional.isPresent()) rep.delete(optional.get());

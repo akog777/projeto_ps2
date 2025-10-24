@@ -6,17 +6,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.mack.estagio.repositories.EmpresaRepository;
+import br.mack.estagio.repository.EmpresaRepository;
 import br.mack.estagio.entities.Empresa;
 
 @RestController
+@RequestMapping("/empresas")
 public class EmpresaController {
 
     @Autowired
     private EmpresaRepository rep;
     
     //CREATE
-    @PostMapping("/empresas")
+    @PostMapping("")
     public Empresa criarEmpresa(@RequestBody Empresa novaEmpresa) {
         if( novaEmpresa.getNome() == null || novaEmpresa.getCNPJ() == null || novaEmpresa.getEmail() == null || 
             novaEmpresa.getTelefone() == null || novaEmpresa.getEndereco() == null || novaEmpresa.getAreaAtuacao() == null ||
@@ -30,13 +31,13 @@ public class EmpresaController {
     }
 
     //READ
-    @GetMapping()
+    @GetMapping("")
     public List<Empresa> listarTodos() {
         return rep.findAll();
     }
 
-    @GetMapping("/empresas/{id}")
-    public Empresa listarPeloId(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public Empresa listarPeloId(@PathVariable Long id) {
         Optional<Empresa> optional = rep.findById(id);
         
         if(optional.isPresent()) return optional.get();
@@ -46,8 +47,8 @@ public class EmpresaController {
 
     
     //UPDATE
-    @PutMapping("/empresas/{id}")
-    public Empresa atualizarPeloId(@RequestBody Empresa novosDados, @PathVariable int id) {
+    @PutMapping("/{id}")
+    public Empresa atualizarPeloId(@RequestBody Empresa novosDados, @PathVariable Long id) {
         
         Optional<Empresa> optional = rep.findById(id);
         if(optional.isPresent()) {
@@ -65,8 +66,8 @@ public class EmpresaController {
     }
 
     //DELETE
-    @DeleteMapping("/empresas/{id}")
-    public void apagarPeloId(@PathVariable int id) {
+    @DeleteMapping("/{id}")
+    public void apagarPeloId(@PathVariable Long id) {
          Optional<Empresa> optional = rep.findById(id);
         
         if(optional.isPresent()) rep.delete(optional.get());
